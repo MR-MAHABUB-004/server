@@ -1,0 +1,225 @@
+<!doctype html>
+
+<html lang="en">  
+<head>  
+<meta charset="utf-8" />  
+<meta name="viewport" content="width=device-width,initial-scale=1" />  
+<title>MR᭄﹅ MAHABUB﹅ Uploader</title>  
+<style>  
+:root {  
+  --bg-color: #111; /* Kept for card/spinner contrast */
+  --card-bg: #181818d0; /* Slightly transparent card background for visibility */
+  --text: #eee;  
+  --accent: #8a2be2;  
+  --result-bg: #000000e0; /* Slightly transparent result box */
+  --result-text: #0ff;  
+}  
+body {
+font-family: Inter, system-ui, sans-serif;
+margin: 0; padding:0;
+background-color: var(--bg-color);
+/* Background Image Added */
+background-image: url('https://i.postimg.cc/wvy3YkxN/ee916185ceb16cb3b164888500bbb2f4.jpg');
+background-size: cover;
+background-position: center;
+background-attachment: fixed;
+color: var(--text);
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+}
+
+.container { width:95%; max-width:700px; }
+h1{text-align:center; margin-bottom:16px;}
+p{text-align:center; color:#aaa;}
+
+.card {
+border:1px solid #333;
+border-radius:12px;
+padding:20px;
+margin-bottom:20px;
+background: var(--card-bg);
+backdrop-filter: blur(5px); /* Optional: Adds a blur effect to the background behind the card for better readability */
+}
+
+label { display:block; margin-bottom:8px; font-weight:600 }
+input[type="text"], input[type="file"] {
+width:100%; padding:8px; border-radius:6px; border:1px solid #333;
+background:#000; color:#fff; box-sizing:border-box;
+}
+
+button {
+padding:10px 16px;
+border-radius:8px;
+cursor:pointer;
+background: var(--accent);
+border:none;
+color:#fff;
+font-weight:600;
+}
+
+pre { background:#000; color:var(--result-text); padding:10px; border-radius:6px; overflow:auto; }
+
+.result-box {
+display:flex; justify-content:space-between; align-items:center;
+padding:8px 12px; margin-top:10px;
+background: var(--result-bg); border:1px solid #333;
+border-radius:6px; word-break:break-all;
+}
+
+.copy-btn {
+margin-left:10px; background: var(--result-text); border:none;
+border-radius:6px; padding:4px 8px; cursor:pointer; font-weight:bold; color:#000;
+}
+
+.spinner {
+border: 4px solid var(--bg-color); /* Used --bg-color for contrast */
+border-top: 4px solid var(--accent);
+border-radius: 50%; width: 24px; height: 24px;
+animation: spin 1s linear infinite; display:inline-block; vertical-align:middle;
+margin-left:10px;
+}
+
+@keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+</style>
+
+</head>  
+<body>  
+<div class="container">  
+  <h1>MR᭄﹅ MAHABUB﹅ → Uploader</h1>  
+  <p>Select file manually, or paste remote URL.</p>  
+  
+  <div class="card">  
+    <h3>1) File Upload</h3>  
+    <form id="fileForm">  
+      <label>Select File</label>  
+      <input id="file" type="file" name="file" required />  
+      <div style="margin-top:8px">  
+        <button type="submit">Upload File</button>  
+      </div>  
+    </form>  
+    <div id="fileResult"></div>  
+  </div>  
+  
+  <div class="card">  
+    <h3>2) Upload from URL</h3>  
+    <form id="urlForm">  
+      <label>Remote File URL</label>  
+      <input id="url" type="text" placeholder="https://example.com/video.mp4" required />  
+      <div style="margin-top:8px">  
+        <button type="submit">Fetch & Store</button>  
+      </div>  
+    </form>  
+    <div id="urlResult"></div>  
+  </div>  
+</div>  
+
+<script>  
+function showResult(el, data){  
+  if(!data) return;  
+  el.innerHTML = '';  
+  
+  if(data.error){  
+    el.innerHTML = '<pre style="color:red">'+data.error+'</pre>';  
+  } else {
+    const box = document.createElement('div');
+    box.className = 'result-box';
+    const span = document.createElement('span');
+    
+    // The text to display and copy
+    const textToCopy = data.stream || data.url || data.file || "Uploaded";
+    span.textContent = textToCopy; 
+
+    const btn = document.createElement('button');  
+    btn.className='copy-btn';  
+    btn.textContent="COPY";  
+    
+    // **FIXED** Copy button logic
+    btn.onclick = ()=>{  
+      navigator.clipboard.writeText(textToCopy)  
+        .then(()=>{ 
+          btn.textContent='COPIED!'; 
+          setTimeout(()=>btn.textContent='COPY',1000); 
+        })  
+        .catch((err)=>{
+          alert('Copy failed: ' + err.message);
+        });  
+    };  
+
+    box.appendChild(span);  
+    box.appendChild(btn);  
+    el.appendChild(box);
+  }
+}
+
+/* Manual File Upload */
+document.getElementById('fileForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const file = document.getElementById('file').files[0];
+  if(!file) return;
+  const fileResult = document.getElementById('fileResult');
+  uploadFile(file, fileResult, fileResult);
+});
+
+/* URL Upload */
+document.getElementById('urlForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const urlResult = document.getElementById('urlResult');
+  urlResult.innerHTML="Fetching... <span class='spinner'></span>";
+  const url = document.getElementById('url').value.trim();
+  try{
+    // Assuming the server endpoint is '/upload'
+    const res = await fetch('/upload?url='+encodeURIComponent(url));
+    const data = await res.json();
+    showResult(urlResult,data);
+  }catch(err){ 
+    showResult(urlResult,{error:err.message}); 
+  }
+});
+
+function uploadFile(file, statusEl, resultEl){
+  const xhr = new XMLHttpRequest();
+  const fd = new FormData();
+  fd.append('file', file);
+
+  // Assuming the server endpoint is '/uploadfile'
+  xhr.open('POST','/uploadfile');
+
+  // Update status with progress
+  xhr.upload.onprogress = ev=>{
+    if(ev.lengthComputable){
+      const percent = Math.round(ev.loaded/ev.total*100);
+      statusEl.innerHTML=`Uploading... ${percent}% <span class='spinner'></span>`;
+    }
+  };
+
+  // Handle successful upload response
+  xhr.onload = ()=>{
+    try{
+      const data = JSON.parse(xhr.responseText);
+      showResult(resultEl,data);
+    }catch(err){ 
+      showResult(resultEl,{error:'Invalid response'}); 
+    }
+    // Clean up status text if it's separate from result
+    if (statusEl !== resultEl) {
+      statusEl.textContent = "";
+    }
+  };
+
+  // Handle upload error
+  xhr.onerror = ()=>{
+    showResult(resultEl,{error:'Upload failed'});
+    // Clean up status text if it's separate from result
+    if (statusEl !== resultEl) {
+      statusEl.textContent = "";
+    }
+  };
+
+  xhr.send(fd);
+}
+</script>
+
+</body>  
+</html>
