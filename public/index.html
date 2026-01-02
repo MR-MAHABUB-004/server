@@ -18,28 +18,28 @@
 
 body {
   font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  margin: 0; padding: 0;
+  margin:0; padding:0;
   background: var(--bg-dark) url('https://i.postimg.cc/wvy3YkxN/ee916185ceb16cb3b164888500bbb2f4.jpg') no-repeat center center fixed;
-  background-size: cover; color: var(--text-main);
-  display: flex; justify-content: center; align-items: center;
-  min-height: 100vh;
+  background-size: cover;
+  color: var(--text-main);
+  display: flex; justify-content:center; align-items:center; min-height:100vh;
 }
 
-.container { width: 90%; max-width: 550px; padding: 20px; }
+.container { width:90%; max-width:550px; padding:20px; }
 
-header { text-align: center; margin-bottom: 30px; }
+header { text-align:center; margin-bottom:30px; }
 header h1 {
-  font-size: 2rem; margin: 0;
-  background: linear-gradient(45deg, #fff, var(--primary));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  text-transform: uppercase; letter-spacing: 2px;
+  font-size:2rem; margin:0;
+  background: linear-gradient(45deg,#fff,var(--primary));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  text-transform:uppercase; letter-spacing:2px;
 }
-header p { color: var(--text-dim); font-size: 0.9rem; }
+header p { color: var(--text-dim); font-size:0.9rem; }
 
 .card {
   background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;
-  padding: 25px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1); border-radius:16px;
+  padding:25px; margin-bottom:24px; box-shadow:0 8px 32px rgba(0,0,0,0.5);
   transition: transform 0.3s ease;
 }
 .card:hover { transform: translateY(-5px); }
@@ -48,16 +48,16 @@ h3 { margin-top:0; font-size:1.1rem; color: var(--primary); display:flex; align-
 label { display:block; margin-bottom:10px; font-size:0.85rem; color: var(--text-dim); }
 
 input[type="text"], input[type="file"] {
-  width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333;
+  width:100%; padding:12px; border-radius:8px; border:1px solid #333;
   background: rgba(0,0,0,0.4); color:#fff; box-sizing:border-box; margin-bottom:15px; outline:none;
-  transition: border-color 0.3s;
+  transition:border-color 0.3s;
 }
 input[type="text"]:focus { border-color: var(--primary); }
 
 button {
-  width: 100%; padding:12px; border-radius:8px; cursor:pointer;
+  width:100%; padding:12px; border-radius:8px; cursor:pointer;
   background: var(--primary); border:none; color:#fff; font-weight:700;
-  text-transform: uppercase; letter-spacing:1px; transition: all 0.3s ease;
+  text-transform:uppercase; letter-spacing:1px; transition: all 0.3s ease;
 }
 button:hover { background: var(--primary-hover); box-shadow:0 0 15px rgba(138,43,226,0.4); }
 
@@ -88,74 +88,72 @@ button:hover { background: var(--primary-hover); box-shadow:0 0 15px rgba(138,43
 <div class="card">
 <h3>📁 Local Upload</h3>
 <form id="fileForm">
-<label for="file">Choose a file from your device</label>
-<input id="file" type="file" name="file" required />
-<button type="submit" id="uploadBtn">Upload to Server</button>
+<input id="file" type="file" name="file" required>
+<button type="submit">Upload</button>
 </form>
-<div id="fileProgressWrapper" class="progress-container">
-<div id="fileProgressBar" class="progress-bar"></div>
+<div class="progress-container" id="fileProgressWrapper">
+<div class="progress-bar" id="fileProgressBar"></div>
 </div>
-<div id="fileStatus" class="status-text"></div>
+<div class="status-text" id="fileStatus"></div>
 <div id="fileResult"></div>
 </div>
 
 <div class="card">
 <h3>🔗 Remote Fetch</h3>
 <form id="urlForm">
-<label for="url">Paste public file URL</label>
-<input id="url" type="text" placeholder="https://example.com/file.zip" required />
-<button type="submit" id="fetchBtn">Fetch & Save</button>
+<input id="url" type="text" placeholder="https://example.com/file.mp4" required>
+<button type="submit">Fetch & Save</button>
 </form>
-<div id="urlStatus" class="status-text"></div>
+<div class="status-text" id="urlStatus"></div>
 <div id="urlResult"></div>
 </div>
 </div>
 
 <script>
-function showResult(el, data){
+function showResult(el,data){
     el.innerHTML='';
     if(!data) return;
     if(data.error){
-        el.innerHTML=`<div class="result-box" style="border-color:var(--error); background:rgba(255,77,77,0.1)">
-            <span class="result-text" style="color:var(--error)">${data.error}</span></div>`;
-    } else {
-        const textToCopy = data.stream || data.url || data.file || "Success!";
-        const box=document.createElement('div'); box.className='result-box';
-        const span=document.createElement('span'); span.className='result-text'; span.textContent=textToCopy;
-        const btn=document.createElement('button'); btn.className='copy-btn'; btn.textContent="COPY";
-        btn.onclick=()=>{navigator.clipboard.writeText(textToCopy).then(()=>{btn.textContent='COPIED!'; btn.style.background='#fff'; setTimeout(()=>{btn.textContent='COPY'; btn.style.background='var(--accent)';},1500);});};
+        el.innerHTML=`<div class="result-box" style="border-color:red; background:rgba(255,77,77,0.1)">
+            <span class="result-text" style="color:red">${data.error}</span></div>`;
+    }else{
+        const text = data.stream || data.url || data.file || "Success!";
+        const box = document.createElement('div'); box.className='result-box';
+        const span = document.createElement('span'); span.className='result-text'; span.textContent=text;
+        const btn = document.createElement('button'); btn.className='copy-btn'; btn.textContent="COPY";
+        btn.onclick=()=>{navigator.clipboard.writeText(text).then(()=>{
+            btn.textContent='COPIED!'; btn.style.background='#fff';
+            setTimeout(()=>{btn.textContent='COPY'; btn.style.background='var(--accent)';},1500);
+        });};
         box.appendChild(span); box.appendChild(btn); el.appendChild(box);
     }
 }
 
 // File Upload
-document.getElementById('fileForm').addEventListener('submit', e=>{
+document.getElementById('fileForm').addEventListener('submit',e=>{
     e.preventDefault();
     const file=document.getElementById('file').files[0];
     if(!file) return;
-
-    const statusEl=document.getElementById('fileStatus');
-    const progressWrapper=document.getElementById('fileProgressWrapper');
-    const progressBar=document.getElementById('fileProgressBar');
-    const resultEl=document.getElementById('fileResult');
-
-    resultEl.innerHTML=''; progressWrapper.style.display='block';
-
-    const xhr=new XMLHttpRequest();
-    const fd=new FormData(); fd.append('file',file);
+    const status=document.getElementById('fileStatus');
+    const wrapper=document.getElementById('fileProgressWrapper');
+    const bar=document.getElementById('fileProgressBar');
+    const result=document.getElementById('fileResult');
+    result.innerHTML=''; wrapper.style.display='block';
+    const xhr=new XMLHttpRequest(); const fd=new FormData(); fd.append('file',file);
     xhr.open('POST','/uploadfile');
     xhr.upload.onprogress=ev=>{
         if(ev.lengthComputable){
-            const percent=Math.round((ev.loaded/ev.total)*100);
-            progressBar.style.width=percent+'%';
-            statusEl.innerHTML=`Uploading: ${percent}%`;
+            const pct=Math.round(ev.loaded/ev.total*100);
+            bar.style.width=pct+'%'; status.textContent=`Uploading: ${pct}%`;
         }
     };
     xhr.onload=()=>{
-        progressWrapper.style.display='none'; statusEl.innerHTML='';
-        try{showResult(resultEl, JSON.parse(xhr.responseText));} catch(e){showResult(resultEl,{error:'Invalid response'});}
+        wrapper.style.display='none'; status.textContent='';
+        let data;
+        try{ data=JSON.parse(xhr.responseText); } catch(e){ data={error:'Invalid JSON from server'}; }
+        showResult(result,data);
     };
-    xhr.onerror=()=>{progressWrapper.style.display='none'; statusEl.innerHTML=''; showResult(resultEl,{error:'Network error'});};
+    xhr.onerror=()=>{wrapper.style.display='none'; status.textContent=''; showResult(result,{error:'Network error'});}
     xhr.send(fd);
 });
 
@@ -163,16 +161,16 @@ document.getElementById('fileForm').addEventListener('submit', e=>{
 document.getElementById('urlForm').addEventListener('submit', async e=>{
     e.preventDefault();
     const urlInput=document.getElementById('url');
-    const urlResult=document.getElementById('urlResult');
-    const urlStatus=document.getElementById('urlStatus');
-    urlResult.innerHTML=''; urlStatus.innerHTML=`Processing... <div class="loader"></div>`;
-    const url=urlInput.value.trim();
+    const result=document.getElementById('urlResult');
+    const status=document.getElementById('urlStatus');
+    result.innerHTML=''; status.innerHTML='Processing... <span class="loader"></span>';
     try{
-        const res=await fetch('/upload?url='+encodeURIComponent(url));
+        const res=await fetch('/upload?url='+encodeURIComponent(urlInput.value.trim()));
         const data=await res.json();
-        urlStatus.innerHTML=''; showResult(urlResult,data);
-    }catch(err){ urlStatus.innerHTML=''; showResult(urlResult,{error:'Failed to fetch remote file'});}
+        status.innerHTML=''; showResult(result,data);
+    }catch(err){ status.innerHTML=''; showResult(result,{error:'Failed to fetch remote file'});}
 });
 </script>
+
 </body>
 </html>
