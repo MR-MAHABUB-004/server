@@ -1,349 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>MR᭄ MAHABUB | Pro Uploader</title>
-    <style>
-        :root {
-            --primary: #8a2be2;
-            --primary-hover: #9d4edd;
-            --bg-dark: #0f0f0f;
-            --card-bg: rgba(25, 25, 25, 0.75);
-            --text-main: #ffffff;
-            --text-dim: #b3b3b3;
-            --accent: #00f2ff;
-            --error: #ff4d4d;
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MR᭄ MAHABUB | Pro Uploader</title>
+<style>
+:root {
+  --primary: #8a2be2;
+  --primary-hover: #9d4edd;
+  --bg-dark: #0f0f0f;
+  --card-bg: rgba(25, 25, 25, 0.75);
+  --text-main: #ffffff;
+  --text-dim: #b3b3b3;
+  --accent: #00f2ff;
+  --error: #ff4d4d;
+}
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: var(--bg-dark) url('https://i.postimg.cc/wvy3YkxN/ee916185ceb16cb3b164888500bbb2f4.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+body {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  margin: 0; padding: 0;
+  background: var(--bg-dark) url('https://i.postimg.cc/wvy3YkxN/ee916185ceb16cb3b164888500bbb2f4.jpg') no-repeat center center fixed;
+  background-size: cover; color: var(--text-main);
+  display: flex; justify-content: center; align-items: center;
+  min-height: 100vh;
+}
 
-        .container {
-            width: 90%;
-            max-width: 550px;
-            padding: 20px;
-        }
+.container { width: 90%; max-width: 550px; padding: 20px; }
 
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+header { text-align: center; margin-bottom: 30px; }
+header h1 {
+  font-size: 2rem; margin: 0;
+  background: linear-gradient(45deg, #fff, var(--primary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-transform: uppercase; letter-spacing: 2px;
+}
+header p { color: var(--text-dim); font-size: 0.9rem; }
 
-        header h1 {
-            font-size: 2rem;
-            margin: 0;
-            background: linear-gradient(45deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+.card {
+  background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;
+  padding: 25px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.3s ease;
+}
+.card:hover { transform: translateY(-5px); }
 
-        header p {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-        }
+h3 { margin-top:0; font-size:1.1rem; color: var(--primary); display:flex; align-items:center; gap:10px; }
+label { display:block; margin-bottom:10px; font-size:0.85rem; color: var(--text-dim); }
 
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-        }
+input[type="text"], input[type="file"] {
+  width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333;
+  background: rgba(0,0,0,0.4); color:#fff; box-sizing:border-box; margin-bottom:15px; outline:none;
+  transition: border-color 0.3s;
+}
+input[type="text"]:focus { border-color: var(--primary); }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+button {
+  width: 100%; padding:12px; border-radius:8px; cursor:pointer;
+  background: var(--primary); border:none; color:#fff; font-weight:700;
+  text-transform: uppercase; letter-spacing:1px; transition: all 0.3s ease;
+}
+button:hover { background: var(--primary-hover); box-shadow:0 0 15px rgba(138,43,226,0.4); }
 
-        h3 {
-            margin-top: 0;
-            font-size: 1.1rem;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.result-box { display:flex; justify-content:space-between; align-items:center; padding:12px; margin-top:15px;
+  background: rgba(0,242,255,0.05); border:1px dashed var(--accent); border-radius:8px;
+  animation: fadeIn 0.5s ease;
+}
+.result-text { color: var(--accent); font-family: monospace; font-size:0.9rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:70%; }
+.copy-btn { width:auto; padding:6px 12px; font-size:0.75rem; background: var(--accent); color:#000; border:none; border-radius:6px; cursor:pointer; }
 
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-            color: var(--text-dim);
-        }
+.progress-container { margin-top:15px; background:#222; border-radius:10px; height:8px; overflow:hidden; display:none; }
+.progress-bar { height:100%; background: var(--primary); width:0%; transition: width 0.3s ease; }
+.status-text { font-size:0.8rem; margin-top:5px; text-align:center; color: var(--text-dim); }
 
-        input[type="text"], 
-        input[type="file"] {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #333;
-            background: rgba(0, 0, 0, 0.4);
-            color: #fff;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus {
-            border-color: var(--primary);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            background: var(--primary);
-            border: none;
-            color: #fff;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-
-        button:hover {
-            background: var(--primary-hover);
-            box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);
-        }
-
-        /* Result Area */
-        .result-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin-top: 15px;
-            background: rgba(0, 242, 255, 0.05);
-            border: 1px dashed var(--accent);
-            border-radius: 8px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .result-text {
-            color: var(--accent);
-            font-family: monospace;
-            font-size: 0.9rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 70%;
-        }
-
-        .copy-btn {
-            width: auto;
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            background: var(--accent);
-            color: #000;
-        }
-
-        /* Progress Bar */
-        .progress-container {
-            margin-top: 15px;
-            background: #222;
-            border-radius: 10px;
-            height: 8px;
-            overflow: hidden;
-            display: none;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .status-text {
-            font-size: 0.8rem;
-            margin-top: 5px;
-            text-align: center;
-            color: var(--text-dim);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loader {
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255,255,255,0.2);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
-        }
-    </style>
+@keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+@keyframes spin { to {transform:rotate(360deg);} }
+.loader { width:18px; height:18px; border:2px solid rgba(255,255,255,0.2); border-top-color:#fff; border-radius:50%; animation: spin 0.8s linear infinite; display:inline-block; }
+</style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>MR᭄ MAHABUB</h1>
-        <p>Advanced Cloud Storage Gateway</p>
-    </header>
+<header>
+<h1>MR᭄ MAHABUB</h1>
+<p>Advanced Cloud Storage Gateway</p>
+</header>
 
-    <div class="card">
-        <h3><span>📁</span> Local Upload</h3>
-        <form id="fileForm">
-            <label for="file">Choose a file from your device</label>
-            <input id="file" type="file" name="file" required />
-            <button type="submit" id="uploadBtn">Upload to Server</button>
-        </form>
-        
-        <div id="fileProgressWrapper" class="progress-container">
-            <div id="fileProgressBar" class="progress-bar"></div>
-        </div>
-        <div id="fileStatus" class="status-text"></div>
-        <div id="fileResult"></div>
-    </div>
+<div class="card">
+<h3>📁 Local Upload</h3>
+<form id="fileForm">
+<label for="file">Choose a file from your device</label>
+<input id="file" type="file" name="file" required />
+<button type="submit" id="uploadBtn">Upload to Server</button>
+</form>
+<div id="fileProgressWrapper" class="progress-container">
+<div id="fileProgressBar" class="progress-bar"></div>
+</div>
+<div id="fileStatus" class="status-text"></div>
+<div id="fileResult"></div>
+</div>
 
-    <div class="card">
-        <h3><span>🔗</span> Remote Fetch</h3>
-        <form id="urlForm">
-            <label for="url">Paste public file URL</label>
-            <input id="url" type="text" placeholder="https://example.com/file.zip" required />
-            <button type="submit" id="fetchBtn">Fetch & Save</button>
-        </form>
-        <div id="urlStatus" class="status-text"></div>
-        <div id="urlResult"></div>
-    </div>
+<div class="card">
+<h3>🔗 Remote Fetch</h3>
+<form id="urlForm">
+<label for="url">Paste public file URL</label>
+<input id="url" type="text" placeholder="https://example.com/file.zip" required />
+<button type="submit" id="fetchBtn">Fetch & Save</button>
+</form>
+<div id="urlStatus" class="status-text"></div>
+<div id="urlResult"></div>
+</div>
 </div>
 
 <script>
-    function showResult(el, data) {
-        if (!data) return;
-        el.innerHTML = '';
-
-        if (data.error) {
-            el.innerHTML = `<div class="result-box" style="border-color:var(--error); background:rgba(255,77,77,0.1)">
-                <span class="result-text" style="color:var(--error)">${data.error}</span>
-            </div>`;
-        } else {
-            const textToCopy = data.stream || data.url || data.file || "Success!";
-            
-            const box = document.createElement('div');
-            box.className = 'result-box';
-            
-            const span = document.createElement('span');
-            span.className = 'result-text';
-            span.textContent = textToCopy;
-
-            const btn = document.createElement('button');
-            btn.className = 'copy-btn';
-            btn.textContent = "COPY";
-            
-            btn.onclick = () => {
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    btn.textContent = 'COPIED!';
-                    btn.style.background = '#fff';
-                    setTimeout(() => {
-                        btn.textContent = 'COPY';
-                        btn.style.background = 'var(--accent)';
-                    }, 1500);
-                });
-            };
-
-            box.appendChild(span);
-            box.appendChild(btn);
-            el.appendChild(box);
-        }
+function showResult(el, data){
+    el.innerHTML='';
+    if(!data) return;
+    if(data.error){
+        el.innerHTML=`<div class="result-box" style="border-color:var(--error); background:rgba(255,77,77,0.1)">
+            <span class="result-text" style="color:var(--error)">${data.error}</span></div>`;
+    } else {
+        const textToCopy = data.stream || data.url || data.file || "Success!";
+        const box=document.createElement('div'); box.className='result-box';
+        const span=document.createElement('span'); span.className='result-text'; span.textContent=textToCopy;
+        const btn=document.createElement('button'); btn.className='copy-btn'; btn.textContent="COPY";
+        btn.onclick=()=>{navigator.clipboard.writeText(textToCopy).then(()=>{btn.textContent='COPIED!'; btn.style.background='#fff'; setTimeout(()=>{btn.textContent='COPY'; btn.style.background='var(--accent)';},1500);});};
+        box.appendChild(span); box.appendChild(btn); el.appendChild(box);
     }
+}
 
-    // Manual File Upload
-    document.getElementById('fileForm').addEventListener('submit', e => {
-        e.preventDefault();
-        const fileInput = document.getElementById('file');
-        const file = fileInput.files[0];
-        if (!file) return;
+// File Upload
+document.getElementById('fileForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    const file=document.getElementById('file').files[0];
+    if(!file) return;
 
-        const statusEl = document.getElementById('fileStatus');
-        const progressWrapper = document.getElementById('fileProgressWrapper');
-        const progressBar = document.getElementById('fileProgressBar');
-        const resultEl = document.getElementById('fileResult');
+    const statusEl=document.getElementById('fileStatus');
+    const progressWrapper=document.getElementById('fileProgressWrapper');
+    const progressBar=document.getElementById('fileProgressBar');
+    const resultEl=document.getElementById('fileResult');
 
-        resultEl.innerHTML = '';
-        progressWrapper.style.display = 'block';
-        
-        const xhr = new XMLHttpRequest();
-        const fd = new FormData();
-        fd.append('file', file);
+    resultEl.innerHTML=''; progressWrapper.style.display='block';
 
-        xhr.open('POST', '/uploadfile');
-
-        xhr.upload.onprogress = ev => {
-            if (ev.lengthComputable) {
-                const percent = Math.round((ev.loaded / ev.total) * 100);
-                progressBar.style.width = percent + '%';
-                statusEl.innerHTML = `Uploading: ${percent}%`;
-            }
-        };
-
-        xhr.onload = () => {
-            progressWrapper.style.display = 'none';
-            statusEl.innerHTML = '';
-            try {
-                const data = JSON.parse(xhr.responseText);
-                showResult(resultEl, data);
-            } catch (err) {
-                showResult(resultEl, { error: 'Server returned invalid response' });
-            }
-        };
-
-        xhr.onerror = () => {
-            progressWrapper.style.display = 'none';
-            statusEl.innerHTML = '';
-            showResult(resultEl, { error: 'Network error occurred' });
-        };
-
-        xhr.send(fd);
-    });
-
-    // URL Upload
-    document.getElementById('urlForm').addEventListener('submit', async e => {
-        e.preventDefault();
-        const urlInput = document.getElementById('url');
-        const urlResult = document.getElementById('urlResult');
-        const urlStatus = document.getElementById('urlStatus');
-        
-        urlResult.innerHTML = '';
-        urlStatus.innerHTML = `Processing Remote URL... <div class="loader"></div>`;
-        
-        const url = urlInput.value.trim();
-        try {
-            const res = await fetch('/upload?url=' + encodeURIComponent(url));
-            const data = await res.json();
-            urlStatus.innerHTML = '';
-            showResult(urlResult, data);
-        } catch (err) {
-            urlStatus.innerHTML = '';
-            showResult(urlResult, { error: 'Failed to fetch remote file' });
+    const xhr=new XMLHttpRequest();
+    const fd=new FormData(); fd.append('file',file);
+    xhr.open('POST','/uploadfile');
+    xhr.upload.onprogress=ev=>{
+        if(ev.lengthComputable){
+            const percent=Math.round((ev.loaded/ev.total)*100);
+            progressBar.style.width=percent+'%';
+            statusEl.innerHTML=`Uploading: ${percent}%`;
         }
-    });
+    };
+    xhr.onload=()=>{
+        progressWrapper.style.display='none'; statusEl.innerHTML='';
+        try{showResult(resultEl, JSON.parse(xhr.responseText));} catch(e){showResult(resultEl,{error:'Invalid response'});}
+    };
+    xhr.onerror=()=>{progressWrapper.style.display='none'; statusEl.innerHTML=''; showResult(resultEl,{error:'Network error'});};
+    xhr.send(fd);
+});
+
+// URL Upload
+document.getElementById('urlForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const urlInput=document.getElementById('url');
+    const urlResult=document.getElementById('urlResult');
+    const urlStatus=document.getElementById('urlStatus');
+    urlResult.innerHTML=''; urlStatus.innerHTML=`Processing... <div class="loader"></div>`;
+    const url=urlInput.value.trim();
+    try{
+        const res=await fetch('/upload?url='+encodeURIComponent(url));
+        const data=await res.json();
+        urlStatus.innerHTML=''; showResult(urlResult,data);
+    }catch(err){ urlStatus.innerHTML=''; showResult(urlResult,{error:'Failed to fetch remote file'});}
+});
 </script>
 </body>
 </html>
