@@ -5,22 +5,18 @@ const axios = require("axios");
 const cors = require("cors");
 const multer = require("multer");
 
-/* ================== BASIC SETUP ================== */
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
 const PORT = process.env.PORT || 24732;
-
-/* ================== STORAGE ================== */
 const UPLOAD_DIR = path.join(__dirname, "uploads");
 const MAP_FILE = path.join(__dirname, "map.json");
 
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR);
 if (!fs.existsSync(MAP_FILE)) fs.writeFileSync(MAP_FILE, "{}");
 
-/* ================== UTILS ================== */
 function loadMap() {
   return JSON.parse(fs.readFileSync(MAP_FILE));
 }
@@ -32,35 +28,29 @@ function saveMap(map) {
 function generateShortId() {
   const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let id = "";
-  for (let i = 0; i < 4; i++) {
-    id += chars[Math.floor(Math.random() * chars.length)];
-  }
+  for (let i = 0; i < 4; i++) id += chars[Math.floor(Math.random() * chars.length)];
   return id;
 }
 
 function generateUniqueShortId(map) {
   let id;
-  do {
-    id = generateShortId();
-  } while (map[id]);
+  do { id = generateShortId(); } while (map[id]);
   return id;
 }
 
-/* ================== MULTER ================== */
+// Multer setup
 const storage = multer.diskStorage({
   destination: UPLOAD_DIR,
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "_" + file.originalname);
-  }
+  filename: (req, file, cb) => cb(null, Date.now() + "_" + file.originalname)
 });
 const upload = multer({ storage });
 
-/* ================== HOME ================== */
+// Home
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
-/* ================== URL UPLOAD ================== */
+// URL Upload
 app.get("/upload", async (req, res) => {
   try {
     const { url } = req.query;
@@ -69,72 +59,69 @@ app.get("/upload", async (req, res) => {
     const filename = Date.now() + "_" + path.basename(url);
     const filePath = path.join(UPLOAD_DIR, filename);
 
-    const response = await axios({
-      url,
-      method: "GET",
-      responseType: "stream"
-    });
-
+    const response = await axios({ url, method: "GET", responseType: "stream" });
     const writer = fs.createWriteStream(filePath);
     response.data.pipe(writer);
 
     writer.on("finish", () => {
-      const map = loadMap();
-      const shortId = generateUniqueShortId(map);
+      try {
+        const map = loadMap();
+        const shortId = generateUniqueShortId(map);
+        map[shortId] = filename;
+        saveMap(map);
 
-      map[shortId] = filename;
-      saveMap(map);
-
-      res.json({
-        status: "success",
-        short: shortId,
-        stream: `${req.protocol}://${req.get("host")}/mahabub/${shortId}.mp4`
-      });
+        res.json({
+          status: "success",
+          short: shortId,
+          stream: `${req.protocol}://${req.get("host")}/mahabub/${shortId}.mp4`
+        });
+      } catch (err) {
+        console.error(err);
+        res.json({ error: "Server error during URL fetch" });
+      }
     });
 
-    writer.on("error", err => {
-      res.json({ error: err.message });
-    });
+    writer.on("error", (err) => res.json({ error: err.message }));
 
   } catch (err) {
     res.json({ error: err.message });
   }
 });
 
-/* ================== FILE UPLOAD ================== */
+// File Upload
 app.post("/uploadfile", upload.single("file"), (req, res) => {
-  if (!req.file) return res.json({ error: "No file uploaded" });
+  try {
+    if (!req.file) return res.json({ error: "No file uploaded" });
 
-  const map = loadMap();
-  const shortId = generateUniqueShortId(map);
+    const map = loadMap();
+    const shortId = generateUniqueShortId(map);
 
-  map[shortId] = req.file.filename;
-  saveMap(map);
+    map[shortId] = req.file.filename;
+    saveMap(map);
 
-  res.json({
-    status: "success",
-    short: shortId,
-    stream: `${req.protocol}://${req.get("host")}/mahabub/${shortId}.mp4`
-  });
+    res.json({
+      status: "success",
+      short: shortId,
+      stream: `${req.protocol}://${req.get("host")}/mahabub/${shortId}.mp4`
+    });
+  } catch (err) {
+    console.error(err);
+    res.json({ error: "Server error during file upload" });
+  }
 });
 
-/* ================== SHORT STREAM ================== */
+// Short stream access
 app.get("/mahabub/:file", (req, res) => {
   const shortId = req.params.file.split(".")[0];
   const map = loadMap();
   const realFile = map[shortId];
 
-  if (!realFile)
-    return res.status(404).json({ error: "Invalid or expired link" });
+  if (!realFile) return res.status(404).json({ error: "Invalid or expired link" });
 
   const filePath = path.join(UPLOAD_DIR, realFile);
-  if (!fs.existsSync(filePath))
-    return res.status(404).json({ error: "File not found" });
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: "File not found" });
 
   res.sendFile(filePath);
 });
 
-/* ================== START ================== */
-app.listen(PORT, () => {
-  console.log(`🔥 Server running → http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`🔥 Server running → http://localhost:${PORT}`));
